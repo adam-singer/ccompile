@@ -168,7 +168,5 @@ pip-log.txt
 *.o
 *.obj
 *.so
-packages/
-bin/packages/
-example/packages/
-test/packages/
+packages
+pubspec.yaml
