@@ -120,10 +120,8 @@ class Utils {
   }
 
   static String toAbsolutePath(String path) {
-    var projectPath = new Path.fromNative(path);
-    var curDir = Utils.getRootScriptDirectory();
-    var curDirPath = new Path.fromNative(curDir);
-    return curDirPath.join(projectPath).toNativePath();
+    return new Path.fromNative(Utils.getRootScriptDirectory()).join
+        (new Path.fromNative(path)).toNativePath();
   }
 
   static String newline = Platform.operatingSystem == 'windows' ? '\r\n' : '\n';

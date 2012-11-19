@@ -9,7 +9,7 @@ class ProjectParser {
 
   Project parse(Map map) {
     if(map == null || map is! Map) {
-      throw new IllegalArgumentException('map: $map');
+      throw new ArgumentError('map: $map');
     }
 
     errors = [];

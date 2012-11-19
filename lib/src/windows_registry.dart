@@ -76,7 +76,7 @@ class WindowsRegistry {
         }
 
         var value = new WindowsRegistryValue();
-        var exp = const RegExp(r'^\s+(\S+)\s+(\S+)\s+(\S.*)');
+        var exp = new RegExp(r'^\s+(\S+)\s+(\S+)\s+(\S.*)');
         var matches = exp.allMatches(string);
         if(matches.iterator().hasNext) {
           var match = matches.iterator().next();
@@ -103,7 +103,7 @@ class WindowsRegistryKey {
 
   WindowsRegistryKey(this.fullName) {
     if(fullName == null || fullName.isEmpty || fullName.endsWith('\\')) {
-      throw new IllegalArgumentException('fullName: $fullName');
+      throw new ArgumentError('fullName: $fullName');
     }
 
     var index = fullName.lastIndexOf('\\');
@@ -126,7 +126,7 @@ class WindowsRegistryKey {
 
   WindowsRegistryKey operator [](String relativePath) {
     if(relativePath == null) {
-      throw new IllegalArgumentException('relativePath: $relativePath');
+      throw new ArgumentError('relativePath: $relativePath');
     }
 
     if(relativePath.isEmpty) {

@@ -3,7 +3,7 @@ part of ccompile;
 class MsvcUtils {
   static Future<String> getEnvironmentScript(int bits) {
     if(bits == null || (bits != 32 && bits != 64)) {
-      throw new IllegalArgumentException('bits: $bits');
+      throw new ArgumentError('bits: $bits');
     }
 
     var key = r'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio';
@@ -65,7 +65,7 @@ class MsvcUtils {
 
   static Future<Map<String, String>> getEnvironment(int bits) {
     if(bits == null || (bits != 32 && bits != 64)) {
-      throw new IllegalArgumentException('bits: $bits');
+      throw new ArgumentError('bits: $bits');
     }
 
     return getEnvironmentScript(bits).chain((script) {
@@ -77,7 +77,7 @@ class MsvcUtils {
       return Process.run(executable, []).chain((result) {
         if(result != null && result.exitCode == 0) {
           var env = new Map<String, String>();
-          var exp = const RegExp(r'(^\S+)=(.*)$', multiLine: true);
+          var exp = new RegExp(r'(^\S+)=(.*)$', multiLine: true);
           var matches = exp.allMatches(result.stdout);
           for(var match in matches) {
             env[match.group(1)] = match.group(2);

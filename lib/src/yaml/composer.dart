@@ -2,13 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-part of yaml;
-
 /**
  * Takes a parsed YAML document (what the spec calls the "serialization tree")
  * and resolves aliases, resolves tags, and parses scalars to produce the
  * "representation graph".
  */
+part of yaml;
+
 class _Composer extends _Visitor {
   /** The root node of the serialization tree. */
   _Node root;
@@ -108,13 +108,13 @@ class _Composer extends _Visitor {
 
   /** Parses a null scalar. */
   _ScalarNode parseNull(String content) {
-    if (!const RegExp("^(null|Null|NULL|~|)\$").hasMatch(content)) return null;
+    if (!new RegExp("^(null|Null|NULL|~|)\$").hasMatch(content)) return null;
     return new _ScalarNode(_Tag.yaml("null"), value: null);
   }
 
   /** Parses a boolean scalar. */
   _ScalarNode parseBool(String content) {
-    var match = const RegExp("^(?:(true|True|TRUE)|(false|False|FALSE))\$").
+    var match = new RegExp("^(?:(true|True|TRUE)|(false|False|FALSE))\$").
       firstMatch(content);
     if (match == null) return null;
     return new _ScalarNode(_Tag.yaml("bool"), value: match.group(1) != null);
@@ -122,13 +122,13 @@ class _Composer extends _Visitor {
 
   /** Parses an integer scalar. */
   _ScalarNode parseInt(String content) {
-    var match = const RegExp("^[-+]?[0-9]+\$").firstMatch(content);
+    var match = new RegExp("^[-+]?[0-9]+\$").firstMatch(content);
     if (match != null) {
       return new _ScalarNode(_Tag.yaml("int"),
-          value: int.parse(match.group(0)));
+          value: Math.parseInt(match.group(0)));
     }
 
-    match = const RegExp("^0o([0-7]+)\$").firstMatch(content);
+    match = new RegExp("^0o([0-7]+)\$").firstMatch(content);
     if (match != null) {
       // TODO(nweiz): clean this up when Dart can parse an octal string
       var n = 0;
@@ -139,10 +139,10 @@ class _Composer extends _Visitor {
       return new _ScalarNode(_Tag.yaml("int"), value: n);
     }
 
-    match = const RegExp("^0x[0-9a-fA-F]+\$").firstMatch(content);
+    match = new RegExp("^0x[0-9a-fA-F]+\$").firstMatch(content);
     if (match != null) {
       return new _ScalarNode(_Tag.yaml("int"),
-          value: int.parse(match.group(0)));
+          value: Math.parseInt(match.group(0)));
     }
 
     return null;
@@ -150,7 +150,7 @@ class _Composer extends _Visitor {
 
   /** Parses a floating-point scalar. */
   _ScalarNode parseFloat(String content) {
-    var match = const RegExp(
+    var match = new RegExp(
         "^[-+]?(\.[0-9]+|[0-9]+(\.[0-9]*)?)([eE][-+]?[0-9]+)?\$").
       firstMatch(content);
     if (match != null) {
@@ -158,20 +158,20 @@ class _Composer extends _Visitor {
       // floats by removing the trailing dot.
       var matchStr = match.group(0).replaceAll(new RegExp(r"\.$"), "");
       return new _ScalarNode(_Tag.yaml("float"),
-          value: double.parse(matchStr));
+          value: Math.parseDouble(matchStr));
     }
 
-    match = const RegExp("^([+-]?)\.(inf|Inf|INF)\$").firstMatch(content);
+    match = new RegExp("^([+-]?)\.(inf|Inf|INF)\$").firstMatch(content);
     if (match != null) {
       var infinityStr = match.group(1) == "-" ? "-Infinity" : "Infinity";
       return new _ScalarNode(_Tag.yaml("float"),
-          value: double.parse(infinityStr));
+          value: Math.parseDouble(infinityStr));
     }
 
-    match = const RegExp("^\.(nan|NaN|NAN)\$").firstMatch(content);
+    match = new RegExp("^\.(nan|NaN|NAN)\$").firstMatch(content);
     if (match != null) {
       return new _ScalarNode(_Tag.yaml("float"),
-          value: double.parse("NaN"));
+          value: Math.parseDouble("NaN"));
     }
 
     return null;

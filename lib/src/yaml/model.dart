@@ -2,13 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-part of yaml;
-
 // This file contains the node classes for the internal representations of YAML
 // documents. These nodes are used for both the serialization tree and the
 // representation graph.
 
 /** A tag that indicates the type of a YAML node. */
+part of yaml;
+
 class _Tag {
   // TODO(nweiz): it would better match the semantics of the spec if there were
   // a singleton instance of this class for each tag.
@@ -68,7 +68,7 @@ class _Node {
 
   int get hashCode => _hashCode([tag, anchor]);
 
-  visit(_Visitor v);
+  abstract visit(_Visitor v);
 }
 
 /** A sequence node represents an ordered list of nodes. */
@@ -148,7 +148,7 @@ class _ScalarNode extends _Node {
       // 20 is the maximum value for this argument, which we use since YAML
       // doesn't specify a maximum.
       return value.toStringAsExponential(20).
-        replaceFirst(const RegExp("0+e"), "e");
+        replaceFirst(new RegExp("0+e"), "e");
     }
 
     if (value is String) {

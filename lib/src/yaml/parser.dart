@@ -2,8 +2,6 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-part of yaml;
-
 /**
  * Translates a string of characters into a YAML serialization tree.
  *
@@ -19,6 +17,8 @@ part of yaml;
  * `nb_ns_plainInLine`. The exception to that rule is methods that just
  * recognize character classes; these are named `is*`.
  */
+part of yaml;
+
 class _Parser {
   static const TAB = 0x9;
   static const LF = 0xA;
@@ -690,7 +690,7 @@ class _Parser {
     if (!captureAs('', () => consumeChar(char))) return false;
     var captured = captureAndTransform(
         () => nAtOnce(digits, (c, _) => isHexDigit(c)),
-        (hex) => new String.fromCharCodes([int.parse("0x$hex")]));
+        (hex) => new String.fromCharCodes([Math.parseInt("0x$hex")]));
     return expect(captured, "$digits hexidecimal digits");
   }
 

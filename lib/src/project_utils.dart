@@ -23,11 +23,11 @@ class ProjectHelper {
 
   static Project loadSync(String filepath, [String format]) {
     if(filepath == null || filepath.isEmpty) {
-      throw new IllegalArgumentException('filename: $filepath');
+      throw new ArgumentError('filename: $filepath');
     }
 
     if(format != null && format != 'json' && format != 'yaml') {
-      throw new IllegalArgumentException('format: $format');
+      throw new ArgumentError('format: $format');
     }
 
     if(format == null) {
@@ -45,7 +45,7 @@ class ProjectHelper {
       }
     }
 
-    var text = FileUtils.readAsTextSync(filepath);
+    var text = FileUtils.readAsStringSync(filepath);
 
     var map;
     if(format == 'json') {
