@@ -1,36 +1,71 @@
 library example_build;
 
 import 'dart:io';
+import 'dart:mirrors';
 import 'package:ccompile/ccompile.dart';
-import 'example_utils.dart';
 
 void main() {
-  build();
+  var projectPath = Utils.toAbsolutePath('../example/sample_extension.yaml');
+  Utils.buildProject(projectPath, {
+    'start': 'Building project "$projectPath"',
+    'success': 'Building complete successfully',
+    'error': 'Building complete with some errors'})
+    .then((exitCode) {});
 }
 
-void build() {
-  var workingDirectory = ExampleUtils.getRootScriptDirectory();
-  var projectName = '${workingDirectory}/sample_extension.yaml';
-  var builder = new ProjectBuilder();
-  var errors = [];
-  builder.loadProject(projectName).then((project) {
-    SystemUtils.writeStdout('Building project "$projectName"');
-    builder.buildAndClean(project, workingDirectory).then((result) {
-      if(result.exitCode != 0) {
-        SystemUtils.writeStdout('Error building project.');
-        SystemUtils.writeStdout('Exit code: ${result.exitCode}');
-        if(!result.stdout.isEmpty) {
-          SystemUtils.writeStdout(result.stdout);
-        }
-
-        if(!result.stderr.isEmpty) {
-          SystemUtils.writeStderr(result.stderr);
-        }
-      } else {
-        SystemUtils.writeStdout('Project is built successfully.');
-        SystemUtils.writeStdout(
-            'To check the work done, run "example_use_sample_extension.dart".');
+class Utils {
+  static Future<int> buildProject(projectPath, Map messages) {
+    var workingDirectory = new Path.fromNative(projectPath).directoryPath.toNativePath();
+    return new Future.immediate(null).chain((_) {
+      var message = messages['start'];
+      if(!message.isEmpty) {
+        Utils.writeString(message, stdout);
       }
+
+      var builder = new ProjectBuilder();
+      return builder.loadProject(projectPath).chain((project) {
+        return builder.buildAndClean(project, workingDirectory).chain((result) {
+          if(result.exitCode == 0) {
+            var message = messages['success'];
+            if(!message.isEmpty) {
+              Utils.writeString(message, stdout);
+            }
+          } else {
+            var message = messages['error'];
+            if(!message.isEmpty) {
+              Utils.writeString(message, stdout);
+            }
+
+            Utils.writeString(result.stdout, stdout);
+            Utils.writeString(result.stderr, stderr);
+          }
+
+          return new Future.immediate(result.exitCode == 0 ? 0 : -1);
+        });
+      });
     });
-  });
+  }
+
+  static String toAbsolutePath(String path) {
+    return new Path.fromNative(Utils.getRootScriptDirectory()).join
+        (new Path.fromNative(path)).toNativePath();
+  }
+
+  static String newline = Platform.operatingSystem == 'windows' ? '\r\n' : '\n';
+
+  static void writeString(String string, OutputStream stream) {
+    stream.writeString('$string$newline');
+  }
+
+  static String getRootScriptDirectory() {
+    var reflection = currentMirrorSystem();
+    var file = reflection.isolate.rootLibrary.url;
+    if(Platform.operatingSystem == 'windows') {
+      file = file.replaceAll('file:///', '');
+    } else {
+      file = file.replaceAll('file://', '');
+    }
+
+    return new Path.fromNative(file).directoryPath.toNativePath();
+  }
 }

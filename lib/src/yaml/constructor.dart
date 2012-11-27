@@ -2,13 +2,13 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+part of yaml;
+
 /**
  * Takes a parsed and composed YAML document (what the spec calls the
  * "representation graph") and creates native Dart objects that represent that
  * document.
  */
-part of yaml;
-
 class _Constructor extends _Visitor {
   /** The root node of the representation graph. */
   _Node root;

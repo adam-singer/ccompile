@@ -3,7 +3,11 @@ part of ccompile;
 class GnuCompiler implements ProjectTool {
   Future<ProcessResult> run(Project project, [String workingDirectory]) {
     var options = new ProcessOptions();
-    var executable = project.compilerSettings.getExecutable('g++');
+    var executable = 'g++';
+    if(project.compilerSettings.compileAs == 'C') {
+      executable = 'gcc';
+    }
+
     var arguments = _projectToArguments(project);
     options.workingDirectory = workingDirectory;
     return Process.run(executable, arguments, options);
@@ -16,6 +20,8 @@ class GnuCompiler implements ProjectTool {
 
     if(project.getBits() == 32) {
       arguments.add('-m32');
+    } else if(project.getBits() == 64) {
+      arguments.add('-m64');
     }
 
     var includes = SystemUtils.expandEnvironmentVars(settings.includes);

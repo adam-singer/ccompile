@@ -2,9 +2,9 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
-/** The visitor pattern for YAML documents. */
 part of yaml;
 
+/** The visitor pattern for YAML documents. */
 class _Visitor {
   /** Returns [alias]. */
   visitAlias(_AliasNode alias) => alias;

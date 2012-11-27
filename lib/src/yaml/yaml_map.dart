@@ -2,6 +2,8 @@
 // for details. All rights reserved. Use of this source code is governed by a
 // BSD-style license that can be found in the LICENSE file.
 
+part of yaml;
+
 /**
  * This class wraps behaves almost identically to the normal Dart Map
  * implementation, with the following differences:
@@ -11,8 +13,6 @@
  *   the same contents.
  * * It has a compatible [hashCode] method.
  */
-part of yaml;
-
 class YamlMap implements Map {
   Map _map;
 

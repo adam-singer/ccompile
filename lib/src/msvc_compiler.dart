@@ -42,6 +42,12 @@ class MsvcCompiler implements ProjectTool {
       }
     });
 
+    if(project.compilerSettings.compileAs == 'C') {
+      arguments.add('/TC');
+    } else {
+      arguments.add('/TP');
+    }
+
     return arguments;
   }
 }

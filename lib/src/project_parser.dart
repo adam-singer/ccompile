@@ -38,6 +38,7 @@ class ProjectParser {
        '{compiler}': compiler,
        '{compiler}:[arguments]': compiler_arguments,
        '{compiler}:[arguments]:"*"': list_item,
+       '{compiler}:"compile_as"': compiler_compile_as,
        '{compiler}:{defines}': compiler_defines,
        '{compiler}:{defines}:"*"': list_item,
        '{compiler}:"executable"': compiler_executable,
@@ -62,6 +63,7 @@ class ProjectParser {
        '{platforms}:{*}:{compiler}': compiler,
        '{platforms}:{*}:{compiler}:[arguments]': compiler_arguments,
        '{platforms}:{*}:{compiler}:[arguments]:"*"': list_item,
+       '{platforms}:{*}:{compiler}:"compile_as"': compiler_compile_as,
        '{platforms}:{*}:{compiler}:{defines}': compiler_defines,
        '{platforms}:{*}:{compiler}:{defines}:"*"': map_item,
        '{platforms}:{*}:{compiler}:"executable"': compiler_executable,
@@ -83,12 +85,24 @@ class ProjectParser {
   }
 
   int bits(String key, dynamic value, Project parent) {
+    var error = false;
     if(value != null) {
       try {
         parent.bits = int.parse(value);
       } catch(e) {
-        throw('Illegal value "$value" for bits. Value may be int or null.');
+        error = true;
       }
+    }
+
+    if(!error && parent.bits != null) {
+      var validValues = [0, 32, 64];
+      if(!validValues.some((e) => e == parent.bits)) {
+        error = true;
+      }
+    }
+
+    if(error) {
+      _errorIllegalValue(key, value, ['0', '32', '64']);
     }
 
     return parent.bits;
@@ -108,6 +122,35 @@ class ProjectParser {
 
   List compiler_arguments(String key, dynamic value, CompilerSettings parent) {
     return parent.arguments;
+  }
+
+  dynamic compiler_compile_as(String key, dynamic value, CompilerSettings parent) {
+    var error = false;
+    if(value == null) {
+      value = 'C++';
+    } else if(value is String) {
+      value = value.trim().toUpperCase();
+      switch(value) {
+        case '':
+          value = 'C++';
+          break;
+        case 'C':
+        case 'C++':
+          break;
+        default:
+          error = true;
+          break;
+      }
+    } else {
+      error = true;
+    }
+
+    if(error) {
+      _errorIllegalValue(key, value, ['C++', 'C']);
+    }
+
+    parent.compileAs = value;
+    return value;
   }
 
   List compiler_includes(String key, dynamic value, CompilerSettings parent) {
@@ -168,5 +211,14 @@ class ProjectParser {
   dynamic map_item(String key, dynamic value, Map parent) {
     parent[key] = value;
     return value;
+  }
+
+  void _errorIllegalValue(String name, value, List<String> validValues) {
+    var message = 'Project parser error: Illegal "$name" value "$value"';
+    if(validValues.length > 0) {
+      message = '$message. Valid values are ${Strings.join(validValues, ', ')}';
+    }
+
+    throw(message);
   }
 }

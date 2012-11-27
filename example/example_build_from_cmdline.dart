@@ -11,11 +11,11 @@ main() {
     Utils.errorFileNotFound(env, ccompile);
   }
 
-  Utils.runDartScript([script, projectPath],{
+  Utils.runDartScript([script, projectPath], {
     'start': 'Building project "$projectPath"',
     'success': 'Building complete successfully',
     'error': 'Building complete with some errors'})
-    .then((exitCode) {}); // Nothing
+    .then((exitCode) {});
 }
 
 class Utils {
