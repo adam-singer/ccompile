@@ -1,6 +1,5 @@
 bits: 0 # 0 means the bits of Dart SDK
 compiler:
-  compile_as: C++
   includes: ['{DART_SDK}/include']
   input_files:
   - 'sample_extension.cc'

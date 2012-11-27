@@ -38,7 +38,6 @@ class ProjectParser {
        '{compiler}': compiler,
        '{compiler}:[arguments]': compiler_arguments,
        '{compiler}:[arguments]:"*"': list_item,
-       '{compiler}:"compile_as"': compiler_compile_as,
        '{compiler}:{defines}': compiler_defines,
        '{compiler}:{defines}:"*"': list_item,
        '{compiler}:"executable"': compiler_executable,
@@ -63,7 +62,6 @@ class ProjectParser {
        '{platforms}:{*}:{compiler}': compiler,
        '{platforms}:{*}:{compiler}:[arguments]': compiler_arguments,
        '{platforms}:{*}:{compiler}:[arguments]:"*"': list_item,
-       '{platforms}:{*}:{compiler}:"compile_as"': compiler_compile_as,
        '{platforms}:{*}:{compiler}:{defines}': compiler_defines,
        '{platforms}:{*}:{compiler}:{defines}:"*"': map_item,
        '{platforms}:{*}:{compiler}:"executable"': compiler_executable,
@@ -122,35 +120,6 @@ class ProjectParser {
 
   List compiler_arguments(String key, dynamic value, CompilerSettings parent) {
     return parent.arguments;
-  }
-
-  dynamic compiler_compile_as(String key, dynamic value, CompilerSettings parent) {
-    var error = false;
-    if(value == null) {
-      value = 'C++';
-    } else if(value is String) {
-      value = value.trim().toUpperCase();
-      switch(value) {
-        case '':
-          value = 'C++';
-          break;
-        case 'C':
-        case 'C++':
-          break;
-        default:
-          error = true;
-          break;
-      }
-    } else {
-      error = true;
-    }
-
-    if(error) {
-      _errorIllegalValue(key, value, ['C++', 'C']);
-    }
-
-    parent.compileAs = value;
-    return value;
   }
 
   List compiler_includes(String key, dynamic value, CompilerSettings parent) {

@@ -25,12 +25,14 @@ class DartUtils {
 
     var dartSdkPath = getSdkFolder();
     if(dartSdkPath == null || dartSdkPath.isEmpty) {
-      return bits;
+      throw('Unable to locate the Dart SDK');
     }
 
+    var executable = 'dart';
     switch(Platform.operatingSystem) {
       case 'linux':
-        switch(_getEIClassFromELF('$dartSdkPath/bin/dart')) {
+        executable = '$dartSdkPath/bin/dart';
+        switch(_getEIClassFromELF(executable)) {
           case ELFCLASS32:
             bits = 32;
             break;
@@ -40,7 +42,8 @@ class DartUtils {
         }
         break;
       case 'macos':
-        switch(_getMHMagicFromPEF('$dartSdkPath/bin/dart')) {
+        executable = '$dartSdkPath/bin/dart';
+        switch(_getMHMagicFromPEF(executable)) {
           case MH_MAGIC:
             bits = 32;
             break;
@@ -50,7 +53,8 @@ class DartUtils {
         }
         break;
       case 'windows':
-        switch(_getBinaryTypeFromPE('$dartSdkPath\\bin\\dart.exe')) {
+        executable = '$dartSdkPath\\bin\\dart.exe';
+        switch(_getBinaryTypeFromPE(executable)) {
           case IMAGE_FILE_MACHINE_I386:
             bits = 32;
             break;
@@ -59,6 +63,12 @@ class DartUtils {
             break;
         }
         break;
+      default:
+        throw('Unsupported operating system ${Platform.operatingSystem}');
+    }
+
+    if(bits == null) {
+      throw('Unable to determine bitness of the "$executable"');
     }
 
     return bits;
@@ -158,16 +168,16 @@ class DartUtils {
     return binaryType;
   }
 
-  static int _listToShort(List<int> buffer, {bool reverse: true}) {
-    if(reverse) {
+  static int _listToShort(List<int> buffer, {bool reverse: false}) {
+    if(!reverse) {
       return buffer[0] + buffer[1] * 0x100;
     } else {
       return buffer[0] * 0x100 + buffer[1];
     }
   }
 
-  static int _listToLong(List<int> buffer, {bool reverse: true}) {
-    if(reverse) {
+  static int _listToLong(List<int> buffer, {bool reverse: false}) {
+    if(!reverse) {
       return buffer[0] + buffer[1] * 0x100 + buffer[2] * 0x10000 +
           buffer[3] * 0x1000000;
     } else {
