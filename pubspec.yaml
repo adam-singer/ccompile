@@ -1,5 +1,5 @@
 name: ccompile
-version: 0.1.8
+version: 0.1.9
 author: Andrew Mezoni <andrew.mezoni@gmail.com>
 homepage: https://github.com/mezoni/ccompile
 description: >
@@ -8,4 +8,3 @@ description: >
   It is also possible to use this to compile any other small projects.
 dependencies:
   args:
-    sdk: args
